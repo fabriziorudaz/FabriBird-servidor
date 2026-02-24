@@ -12,7 +12,7 @@ public class GameServer {
     private List<PlayerConnection> players = new ArrayList<>();
 
     public void start() {
-        //Se corre en hilos independientes, esto para que el renderizado de la interfaz no de bloquee
+        //Se corre en hilos independientes, esto para que el renderizado de la interfaz no se bloquee
         Thread thread = new Thread(() -> {
 
             try {
@@ -21,7 +21,7 @@ public class GameServer {
                 byte[] buffer = new byte[1024];
 
                 while (true) {
-                    //queda escuchando, hasta que recibe un paquete lo recible en DatagramPacket
+                    //queda escuchando, hasta que recibe un paquete lo recibe en DatagramPacket
                     DatagramPacket packet =
                         new DatagramPacket(buffer, buffer.length);
                     //Y aca "traduce" el paquete a un mensaje para que se entienda
@@ -42,7 +42,7 @@ public class GameServer {
                         getOrCreatePlayer(address, port);
 
 
-                    /*Aca el servidor recibe el estado, posicion y score del cliente, y entoncecs
+                    /*Aca el servidor recibe el estado, posicion y score del cliente, y entonces
                     * se lo pasa al otro cliente, para que este al tanto de lo mismo y pueda
                     * tambien ver al jugador, de esta manera el servidor muestra en la pantalla de los
                     * clientes al otro cliente*/
