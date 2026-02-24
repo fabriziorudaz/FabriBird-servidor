@@ -25,22 +25,29 @@ public class GameServer {
                     DatagramPacket packet =
                         new DatagramPacket(buffer, buffer.length);
                     //Y aca "traduce" el paquete a un mensaje para que se entienda
+                    // 1. Escucha esperando paquetes
                     socket.receive(packet);
 
+                    // 2. Traduce el mensaje (posición, vivo/muerto, score)
                     String message =
                         new String(packet.getData(), 0, packet.getLength());
-                    //Aca identifica a cada cliente por la IP y puerto de onexion
+                    //Aca identifica a cada cliente por la IP y puerto de conexion
                     InetAddress address = packet.getAddress();
                     //y el puerto lo guarda aca
                     int port = packet.getPort();
 
+                    // 3. Identifica al jugador por su IP y puerto
                     PlayerConnection player =
                         //Aca actualiza el PlayerConnection
                         getOrCreatePlayer(address, port);
+
+
                     /*Aca el servidor recibe el estado, posicion y score del cliente, y entoncecs
                     * se lo pasa al otro cliente, para que este al tanto de lo mismo y pueda
                     * tambien ver al jugador, de esta manera el servidor muestra en la pantalla de los
                     * clientes al otro cliente*/
+
+                    // 4. Actualiza los datos del jugador
                     if (message.contains(",")) {
 
                         String[] parts = message.split(",");
@@ -50,7 +57,7 @@ public class GameServer {
                         player.score = Integer.parseInt(parts[2]);
                     }
 
-
+                    // 5. Envía el estado a TODOS los jugadores
                     sendGameState(socket);
                 }
 
@@ -92,6 +99,8 @@ public class GameServer {
     private void sendGameState(DatagramSocket socket) throws Exception {
 
         boolean gameReady = players.size() == 2;
+        // Construye el mensaje con TODOS los datos de TODOS los jugadores
+
 
         StringBuilder data = new StringBuilder();
         data.append("START:").append(gameReady ? "1" : "0").append("|");
@@ -110,7 +119,8 @@ public class GameServer {
         }
         //Aca el server envia el estado global de cada cliente
         for (PlayerConnection p : players) {
-
+            // Envía a cada cliente su propio color ("YOU:BLUE|...")
+            // + los datos del otro jugador
             String personalData = "YOU:" + p.color + "|" + data.toString();
             byte[] sendData = personalData.getBytes();
 
